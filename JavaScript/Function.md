@@ -109,4 +109,40 @@ var sub = function(x,y) { // 함수 표현식으로 정의
 따라서 `sub`는 자바스크립트의 변수 호이스팅으로 인해 `undefined`로 초기화 되어 있을 뿐, 함수 객체를 가르키고 있지 않다.
 따라서 `sub(2,2)`시 `undefined`를 호출하려고 한 것이 되므로, `TypeError`가 발생한다.
 
+---
+
+## 함수 호출
+### 매개변수와 인수
+- 함수가 호출되면 암묵적으로 매개변수가 생성되며, 다른 변수들과 마찬가지로 `undefined`로 초기화된 후, 인수가 순서대로 할당된다.
+- 함수는 매개변수와 인수의 개수가 일치하는지 체크하지 않는다.
+- 모든 인수는 암묵적으로 `arguments` 객체의 프로퍼티로 보관된다.
+```js
+function add(x,y) {
+  return x+y;
+}
+
+add(1); // TypeError => x : 1, y : undefined
+add(1,2,3); // 3 => x : 1, y : 2
+```
+- 매개변수 기본값을 설정해줄 수 있다.
+```js
+function add(x = 0, y = 0) {
+  return x+y;
+}
+
+add(1); // 1 => x : 1, y = 0
+```
+
+### 반환문
+- return 키워드 뒤에 오는 표현식을 반환한다.
+- 만일 명시적으로 표현식을 반환하지 않거나 생략한다면, `undefined`를 반환한다.
+```js
+function ex1() {
+  return; // undefined 가 반환됨
+}
+
+function ex2() {
+  // undefined 가 반환됨
+}
+```
 
