@@ -149,6 +149,7 @@ span {
 </p>
 ```
 
+<img width="426" alt="Screenshot 2024-07-12 at 15 02 23" src="https://github.com/user-attachments/assets/1ecf040f-79a0-491b-ab6d-a89e0440c5a3">
 
 width와 height가 정사각형으로 적용되었으며,
 
