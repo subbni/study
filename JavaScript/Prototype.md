@@ -65,4 +65,8 @@ Person p1 = new Person('Ha');
 console.log(p1.constructor === Person); // true
 ```
 
+이 연결은 생성자 함수가 생성될 때, 즉 함수 객체가 생성될 때 이루어진다.
+따라서 생성자 함수로서 호출할 수 없는 함수, non-structor인 화살표 함수와 ES6 메서드 축약 표현으로 정의한 메서드는
+prototype 프로퍼티를 소유하지 않으며 프로토타입도 생성하지 않는다.
+
 ## 프로토타입 생성 시점
