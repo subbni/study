@@ -38,13 +38,15 @@ console.log(person.hasOwnProperty('__proto__'); // false
 ```
 
 ## 함수 객체 - prototype 프로퍼티
-일반 객체와 달리 함수 객체는 prototype 프로퍼티를 소유한다.
+함수 객체만이 prototype 프로퍼티를 소유한다.
+
+이 prototype 프로퍼티는 **생성자 함수가 생성할 객체 인스턴스의 프로토타입**을 가리킨다.
 ```js
 (function() {}).hasOwnProperty('prototype'); // true
 
 ({}).hasOwnProperty('prototype'); // false
 ```
-이 prototype 프로퍼티는 생성자 함수가 생성할 객체 인스턴스의 프로토타입을 가리킨다.
+
 
 모든 객체가 가진 `__proto__` 접근자 프로퍼티와 함수 객체만이 가진 `prototype` 프로퍼티는 결국 동일한 프로토타입을 가리킨다.
 
@@ -52,7 +54,7 @@ console.log(person.hasOwnProperty('__proto__'); // false
 
 # 프로토타입
 ## constructor 프로퍼티
-모든 프로토타입은 `constructor` 프로퍼티를 가지는데, 이는 `prototype` 프로퍼티로 자신을 참조하고 있는 생성자 함수 객체를 가리킨다.
+모든 프로토타입은 `constructor` 프로퍼티를 가지는데, 이는 `prototype` 프로퍼티로 자신을 참조하고 있는 **생성자 함수 객체**를 가리킨다.
 
 ```js
 function Person(name) {
@@ -69,4 +71,64 @@ console.log(p1.constructor === Person); // true
 따라서 생성자 함수로서 호출할 수 없는 함수, non-structor인 화살표 함수와 ES6 메서드 축약 표현으로 정의한 메서드는
 prototype 프로퍼티를 소유하지 않으며 프로토타입도 생성하지 않는다.
 
-## 프로토타입 생성 시점
+## 리터럴 표기법에 의해 생성된 객체의 constructor 프로퍼티
+리터럴 표기법에 의해 생성된 객체도 프로토타입이 존재한다.
+
+그렇지만 리터럴 표기법에 생성된 객체의 경우, 해당 객체의 contructor가 가르키는 생성자 함수가 반드시 그 객체를 생성한 생성자 함수라고 단정할 수 없다.
+
+**리터럴 표기법으로 객체가 생성되는 과정**
+1. Object 생성자 함수가 추상 연산 `OrdinaryObjectCreate` 호출
+2. `Object.prototype`을 프로토타입으로 하는 빈 객체 생성
+3. 해당 객체에 프로퍼티 추가
+
+- Object 생성자 함수를 호출하여 만들어진 객체와 객체 리터럴 평가로 만들어진 객체는 new.target 의 확인이나 프로퍼티 추가 처리 등의 세부 내용이 상이하다.
+- 객체 리터럴에 의해 생성된 객체는 Object 생성자 함수가 생성한 객체와 다르므로 Object 생성자 함수에 의해 만들어진 객체라고 말할 수 없지만, 그럼에도 constructor로서 Object 생성자 함수를 갖는다.
+
+함수 객체에서도 동일한 상황이 나타난다.
+
+함수 선언문이나 표현식으로 생성된 함수는 Function 생성자 함수로 생성된 함수와 매우 다르다. (스코프, 클로저 등등)
+그렇지만 함수 선언문이나 표현식으로 생성된 함수의 constructor를 확인해보면, Function 생성자 함수를 가리키고 있다.
+```js
+function foo() { }; // 함수 선언식으로 생성된 함수
+console.log(foo.contructor === Function); 
+```
+
+이처럼 리터럴 표기법에 의해 생성된 객체는 일종의 가상 생성자 함수를 갖는다. 프로토타입은 언제나 생성자 함수와 더불어 생성되어 prototype, constructor 프로퍼티에 연결되어야 하기 때문이다. **프로토타입과 생성자 함수는 단독으로 존재할 수 없다.**
+
+# 프로토타입 생성 시점
+
+프로토타입은 생성자 함수가 생성될 때 함께 생성된다.
+
+생성자 함수는 사용자가 정의한 생성자 함수와 자바스크립트가 기본으로 제공하는 빌트인 생성자 함수로 나뉜다.
+
+### 사용자 정의 생성자 함수와 프로토타입 생성
+내부 메서드 `[[Construct]]`를 갖는 함수 객체는 new 연산자와 함께 생성자 함수로서 호출할 수 있다.
+
+이 경우, 함수 정의가 평가되어 함수 객체를 생성하는 시점에 프로토타입이 함께 생성된다.
+```js
+console.log(Person.prototype); // {constructor: f}
+
+function Persion(name) {
+ this.name = name;
+}
+```
+함수 선언문은 런타임 이전에 JS엔진에 의해 먼저 실행된다. 따라서 위 코드의 Person 생성자 함수는 런타임 이전에 함수 객체가 되며 프로토타입을 생성한다.
+- 생성된 프로토타입은 Person 생성자 함수의 `prototype`에 바인딩되며, `constructor` 프로퍼티로 Person 생성자 함수를 참조한다.
+- **모든 객체는 프로토타입을 가지므로 Person 생성자 함수에 의해 만들어진 프로토타입도 자신의 프로토타입을 가지며, 이는 `Object.prototype`이다.**
+
+
+생성자 함수로서 호출할 수 없는 함수의 경우, 프로토타입이 생성되지 않는다.
+
+### 빌트인 생성자 함수와 프로토타입 생성
+Object, String, Number, Function, Array, RegExp, Date, Promise와 같은 빌트인 생성자 함수도 빌트인 생성자 함수가 생성되는 시점에 프로토타입이 함께 생성된다.
+
+**모든 빌트인 생성자 함수는 전역객체가 생성되는 시점에 생성된다.**
+
+> 전역 객체 : Global Object
+>
+> - 전역 객체는 코드가 실행되기 이전 단계에서 JS 엔진에 의해 생성되는 특수한 객체이다.
+> 
+> - 전역 객체는 Client Side(브라우저)에서는 window, Server Side(Node.js)에서는 global 객체를 의미한다.
+> 
+> - 전역 객체는 표준 빌트인 객체(Object,String,Number...)와 환경에 따른 호스트 객체, var 키워드로 선언한 전역 변수와 전역 함수를 프로퍼티로 갖는다.
+
