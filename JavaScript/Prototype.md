@@ -139,3 +139,33 @@ Object, String, Number, Function, Array, RegExp, Date, Promise와 같은 빌트�
 > 
 > - 전역 객체는 표준 빌트인 객체(Object,String,Number...)와 환경에 따른 호스트 객체, var 키워드로 선언한 전역 변수와 전역 함수를 프로퍼티로 갖는다.
 
+# 프로토타입 체인
+자바스크립트는 객체의 프로퍼티(메서드 포함)에 접근하려고 할 때 해당 객체에 접근하려는 프로퍼티가 없다면 [[Prototype]] 내부 슬롯의 참조를 따라서 프로퍼티를 순차적으로 검색한다.
+
+이를 프로토타입 체인이라고 하며, 자바스크립트는 프로토타입 체인을 따라 객체의 프로퍼티를 검색한다.
+
+- 프로토타입 체인의 최상위에 위치하는 객체는 `Object.prototype`이다.
+- `Object.prototype`의 [[Prototype]]의 값은 `null`이다.
+
+> 프로토타입 체인은 '상속'과 '프로퍼티 검색'을 위한 체인이다.
+
+## instanceof 연산자
+> `객체 식별자` instanceof `생성자 함수`
+
+우변의 생성자 함수의 'prototype'가 가리키는 객체가 좌변 객체의 프로토타입 체인 중에 존재한다면 `true`를 반환한다.
+
+## 정적 프로퍼티/메서드
+생성자 함수로 인스턴스를 생성하지 않아도 사용 가능한 생성자 함수 객체의 프로퍼티/메서드이다.
+(Java에서의 static 프로퍼티/메서드와 유사)
+- 생성자 함수로 생성한 인스턴스로는 참조/호출이 불가능하다.
+- 메서드 내에서 `this`를 사용하지 않는다.
+```js
+function Fruit(name) {
+ this.name = name;
+}
+
+Fruit.staticProp = 'static prop'; // 정적 프로퍼티
+Fruit.staticMethod = function() {
+ console.log('This is Fruit.'); // 정적 메서드
+}
+```
