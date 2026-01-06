@@ -19,6 +19,9 @@ Path p = base.resolve(id).resolve(file);
 - normalize() : 정규화
 - toAbsolutePath() : 절대 경로 반환 
 
+-----
+
+
 ## 자주 쓰는 Path/Files 패턴
 ### Path 만들기
 ```java
